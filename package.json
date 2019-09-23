@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "",
   "keywords": [],
+  "iife": "dist/aurora-js-ts.iife.js",
   "main": "dist/aurora-js-ts.umd.js",
   "module": "dist/aurora-js-ts.es2015.js",
   "typings": "dist/types/aurora-js-ts.d.ts",
@@ -22,6 +23,8 @@
     "lint": "tslint --type-check -p 'tsconfig.json' codeFrame 'src/**/*.ts'",
     "prebuild": "rimraf dist",
     "build": "tsc && rollup -c && rimraf compiled && typedoc --out dist/docs --target es6 --theme minimal --exclude '**/*.spec.ts' src",
+    "browser-mode": "ln -sf ./browser-http.ts src/sources/http.ts && ln -sf ./browser-file.ts src/sources/file.ts",
+    "node-mode": "ln -sf ./node-http.ts src/sources/http.ts && ln -sf ./node-file.ts src/sources/file.ts",
     "start": "tsc-watch --onSuccess \"rollup -c\"",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -51,6 +54,7 @@
     "@angular/compiler": "^4.3.6",
     "@angular/core": "^4.3.6",
     "@types/jest": "^20.0.0",
+    "@types/lodash": "^4.14.138",
     "@types/node": "^8.0.0",
     "codelyzer": "^3.2.0",
     "colors": "^1.1.2",
@@ -63,6 +67,7 @@
     "replace-in-file": "^2.5.0",
     "rimraf": "^2.6.1",
     "rollup": "^0.49.0",
+    "rollup-plugin-alias": "^2.0.0",
     "rollup-plugin-commonjs": "^8.0.2",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
@@ -70,11 +75,9 @@
     "ts-node": "^3.0.6",
     "tsc-watch": "^1.0.5",
     "tslint": "^5.7.0",
-    "typedoc": "^0.7.1",
+    "typedoc": "^0.15.0",
     "typescript": "^2.5.2",
     "zone.js": "^0.8.17"
   },
-  "dependencies": {
-    "rollup-plugin-alias": "^2.0.0"
-  }
+  "dependencies": {}
 }

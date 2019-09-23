@@ -7,7 +7,7 @@ export class HTTPSource extends AV.EventEmitter {
   private loaded;
   private size;
 
-  constructor(private url: string) {
+  constructor(private url: string, private opts?: any) {
     super();
     this.request = null;
     this.response = null;
