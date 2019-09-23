@@ -35,7 +35,7 @@ export class FileSource extends AV.EventEmitter {
         this.emit("data", new AV.Buffer(new Uint8Array(buf)));
       });
       
-      // comment start
+      /*
       let b = Buffer.alloc(1 << 20);
       let blen = 0;
       this.stream.on("data", (buf : Buffer) => {
@@ -56,7 +56,7 @@ export class FileSource extends AV.EventEmitter {
           blen = buf.length - blen;
         }
       });
-      // comment end
+      */
   
   
       this.stream.on("end", ()=>{

@@ -37,7 +37,7 @@ export class EventEmitter extends Base implements IEventEmitter {
     }
 
     emit(event, ...args: any[]) {
-        console.log(this.constructor.name, event, args);
+        //console.log(this.constructor.name, event, args);
         if(!this.events || !this.events[event]) return;
         this.events[event].forEach(fn => {
             fn.apply(this, args);

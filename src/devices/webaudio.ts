@@ -3,8 +3,8 @@ import { AudioDevice } from "../audio-device";
 import { Resampler } from './resampler';
 
 export class WebAudioDevice extends AudioDeviceBackend {
-    static AudioContext = AudioContext || (document as any).webkitAudioContext;
-    static supported = WebAudioDevice.AudioContext;
+    static Context = (document as any).AudioContext || (document as any).webkitAudioContext;
+    static supported = WebAudioDevice.Context;
 
     static sharedContext = null;
 
@@ -18,7 +18,7 @@ export class WebAudioDevice extends AudioDeviceBackend {
     constructor(sampleRate: number, channels: number) {
         super();
 
-        WebAudioDevice.sharedContext = WebAudioDevice.sharedContext || new WebAudioDevice.AudioContext();
+        WebAudioDevice.sharedContext = WebAudioDevice.sharedContext || new WebAudioDevice.Context();
 
         this.context = WebAudioDevice.sharedContext;
         this.deviceSampleRate = this.context.sampleRate;
