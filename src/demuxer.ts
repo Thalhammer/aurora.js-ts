@@ -8,9 +8,9 @@ export interface DemuxerRegistration {
 
 export abstract class Demuxer extends AV.EventEmitter {
     private source: AV.EventEmitter;
-    protected stream: AV.Stream;
-    private seekPoints: SeekPoint[];
-    protected format: any;
+    public stream: AV.Stream;
+    public seekPoints: SeekPoint[];
+    public format: any;
 
     constructor(source: AV.EventEmitter, chunk: AV.Buffer) {
         super();
@@ -92,7 +92,9 @@ export abstract class Demuxer extends AV.EventEmitter {
             let offset = stream.offset;
             try {
                 if(format.probe(stream)) return format;
-            } catch(e){}
+            } catch(e){
+                console.error(e);
+            }
 
             stream.seek(offset);
         }

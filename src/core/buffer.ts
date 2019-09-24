@@ -10,7 +10,7 @@ export class Buffer {
     {
         if(input instanceof Uint8Array){
             this.data = input;
-        } else if(input instanceof ArrayBuffer || Array.isArray(input) || (global.Buffer && global.Buffer.isBuffer(input))) {
+        } else if(input instanceof ArrayBuffer || Array.isArray(input) || (typeof global !== 'undefined' && global.Buffer && global.Buffer.isBuffer(input))) {
             this.data = new Uint8Array(input as ArrayBuffer);
         } else if(typeof input === "number") { // This is split from above to make typescript happy
             this.data = new Uint8Array(input as number);

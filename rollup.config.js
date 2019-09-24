@@ -7,13 +7,13 @@ const camelCase = require('lodash.camelcase')
 const libraryName = 'aurora-js-ts'
 
 export default {
-  entry: `compiled/${libraryName}.js`,
-  targets: [
-    //{ dest: pkg.main, moduleName: camelCase(libraryName), format: 'umd' },
-	  //{ dest: pkg.module, format: 'es' },
-	  { dest: pkg.iife, format: 'iife', name: "AV" }
+  input: `compiled/${libraryName}.js`,
+  output: [
+    //{ file: pkg.main, name: camelCase(libraryName), format: 'umd' },
+	  //{ file: pkg.module, format: 'es' },
+	  { file: pkg.iife, format: 'iife', name: "AV" }
   ],
-  sourceMap: true,
+  sourcemap: true,
   // Indicate here external modules you don't wanna include in your bundle (i.e.: 'lodash')
   external: [],
   plugins: [

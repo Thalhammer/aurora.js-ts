@@ -7,10 +7,10 @@ export interface DecoderRegistration {
 
 export abstract class Decoder extends EventEmitter {
     protected stream: Stream;
-    private bitstream: Bitstream;
+    protected bitstream: Bitstream;
     private receivedFinalBuffer: boolean;
     private waiting: boolean;
-    private demuxer: Demuxer;
+    protected demuxer: Demuxer;
     protected format: any;
     
     constructor(demuxer: any, format: any) {

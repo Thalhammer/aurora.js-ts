@@ -3,7 +3,7 @@ import { AudioDevice } from "../audio-device";
 import { Resampler } from './resampler';
 
 export class WebAudioDevice extends AudioDeviceBackend {
-    static Context = (document as any).AudioContext || (document as any).webkitAudioContext;
+    static Context = (window as any).AudioContext || (window as any).webkitAudioContext;
     static supported = WebAudioDevice.Context;
 
     static sharedContext = null;

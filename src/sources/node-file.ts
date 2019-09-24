@@ -28,13 +28,13 @@ export class FileSource extends AV.EventEmitter {
   
       this.stream = fs.createReadStream(this.filename);
   
-      // TODO: Buffering somehow breaks our data, pass it straight through for now
       this.stream.on("data", (buf : Buffer) => {
         this.loaded += buf.length;
         this.emit("progress", this.loaded / this.size * 100);
         this.emit("data", new AV.Buffer(new Uint8Array(buf)));
       });
       
+      // TODO: Buffering somehow breaks our data, pass it straight through for now
       /*
       let b = Buffer.alloc(1 << 20);
       let blen = 0;

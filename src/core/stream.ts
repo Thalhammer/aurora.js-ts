@@ -1,5 +1,4 @@
 import { BufferList } from "./buffer-list";
-import { timingSafeEqual } from "crypto";
 import { UnderflowError } from "./underflow-error";
 import { Buffer } from "./buffer";
 
@@ -18,8 +17,8 @@ export class Stream {
     private nativeEndian = new Uint16Array(new Uint8Array([0x12, 0x34]).buffer)[0] == 0x3412;
 
     private list : BufferList;
-    public localOffset;
-    public offset;
+    public localOffset: number;
+    public offset: number;
 
     constructor(list : BufferList) {
         this.list = list;

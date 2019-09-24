@@ -47,7 +47,7 @@ export class AudioDevice extends EventEmitter {
         if(!this.playing) return;
         this.playing = false;
 
-        this.device.off("refill", this.refill);
+        if(this.device) this.device.off("refill", this.refill);
         clearInterval(this._timer);
     }
 
