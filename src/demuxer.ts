@@ -6,13 +6,13 @@ export interface DemuxerRegistration {
     probe(buffer: AV.Stream): boolean;
 }
 
-export abstract class Demuxer extends AV.EventEmitter {
-    private source: AV.EventEmitter;
+export abstract class Demuxer extends AV.EventHost {
+    private source: AV.EventHost;
     public stream: AV.Stream;
     public seekPoints: SeekPoint[];
     public format: any;
 
-    constructor(source: AV.EventEmitter, chunk: AV.Buffer) {
+    constructor(source: AV.EventHost, chunk: AV.Buffer) {
         super();
         let list = new AV.BufferList();
         list.append(chunk);
@@ -24,7 +24,7 @@ export abstract class Demuxer extends AV.EventEmitter {
             received = true;
             list.append(chunk);
             try {
-                this.readChunk(chunk);
+                this.readChunk();
             } catch(e) {
                 this.emit("error", e);
             }
@@ -33,7 +33,7 @@ export abstract class Demuxer extends AV.EventEmitter {
             this.emit("error", err);
         });
         this.source.on("end", () => {
-            if(received) this.readChunk(chunk);
+            if(!received) this.readChunk();
             this.emit("end");
         });
         this.seekPoints = [];
@@ -41,7 +41,7 @@ export abstract class Demuxer extends AV.EventEmitter {
     }
 
     abstract init();
-    abstract readChunk(chunk: AV.Buffer);
+    abstract readChunk();
 
     addSeekPoint(offset, timestamp) {
         let index = this.searchTimestamp(timestamp);

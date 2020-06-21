@@ -1,7 +1,7 @@
 import { ISource } from '../source';
-import { BufferList, Buffer, EventEmitter } from '../core';
+import { BufferList, Buffer, EventHost } from '../core';
 
-export class BufferSource extends EventEmitter implements ISource {
+export class BufferSource extends EventHost implements ISource {
     private list: BufferList;
     private paused: boolean;
     private _timer: any;

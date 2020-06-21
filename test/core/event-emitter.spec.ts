@@ -2,7 +2,7 @@ import * as AV from '../../src/core/';
 
 describe('core/events', () => {
   it('on', () => {
-    let emitter = new AV.EventEmitter();
+    let emitter = new AV.EventHost();
     let times = 0;
     emitter.on("test", (a,b)=>{
         times++;
@@ -15,7 +15,7 @@ describe('core/events', () => {
   });
 
   it('off', () => {
-    let emitter = new AV.EventEmitter();
+    let emitter = new AV.EventHost();
     let times = 0;
     let fn = ()=>{
         times++;
@@ -28,7 +28,7 @@ describe('core/events', () => {
   });
 
   it('once', () => {
-    let emitter = new AV.EventEmitter();
+    let emitter = new AV.EventHost();
     let times = 0;
 
     emitter.once("test", ()=>{
@@ -42,7 +42,7 @@ describe('core/events', () => {
   });
 
   it('emit', () => {
-    let emitter = new AV.EventEmitter();
+    let emitter = new AV.EventHost();
     let times = 0;
 
     emitter.on("test", ()=>{

@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as AV from '../core';
 
-export class FileSource extends AV.EventEmitter {
+export class FileSource extends AV.EventHost {
     private stream: fs.ReadStream;
     private loaded: number;
     private size: number;

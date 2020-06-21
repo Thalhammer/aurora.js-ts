@@ -9,8 +9,8 @@ const libraryName = 'aurora-js-ts'
 export default {
   input: `compiled/${libraryName}.js`,
   output: [
-    //{ file: pkg.main, name: camelCase(libraryName), format: 'umd' },
-	  //{ file: pkg.module, format: 'es' },
+    { file: pkg.main, name: camelCase(libraryName), format: 'umd' },
+	  { file: pkg.module, format: 'es' },
 	  { file: pkg.iife, format: 'iife', name: "AV" }
   ],
   sourcemap: true,

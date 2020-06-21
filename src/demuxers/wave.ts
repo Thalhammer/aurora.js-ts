@@ -23,7 +23,7 @@ export class WAVEDemuxer extends Demuxer {
     init() {
     }
 
-    readChunk(chunk: Buffer) {
+    readChunk() {
         if(!this.readStart && this.stream.available(12)) {
             if(this.stream.readString(4) != "RIFF")
                 return this.emit("error", "Invalid WAV file.");

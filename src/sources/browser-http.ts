@@ -1,6 +1,6 @@
 import * as AV from '../core';
 
-export class HTTPSource extends AV.EventEmitter {
+export class HTTPSource extends AV.EventHost {
   private chunkSize: number;
   private inflight: boolean;
   private length: number;
@@ -74,7 +74,7 @@ export class HTTPSource extends AV.EventEmitter {
 
     let endPos = Math.min(this.offset + this.chunkSize, this.length - 1);
     this.xhr.setRequestHeader("If-None-Match", "webkit-no-cache")
-    this.xhr.setRequestHeader("Range", "bytes=#{@offset}-#{endPos}")
+    this.xhr.setRequestHeader("Range", "bytes=" + this.offset + "-" + endPos)
     this.xhr.overrideMimeType('text/plain; charset=x-user-defined')
     this.xhr.send(null);
   }

@@ -1,14 +1,14 @@
 import {Base} from './base'
 
 
-export interface IEventEmitter {
+export interface IEventHost {
     on(event: string, fn);
     off(event?: string, fn?);
     once(event: string, fn);
     emit(event, ...args: any[]);
 };
 
-export class EventEmitter extends Base implements IEventEmitter {
+export class EventHost extends Base implements IEventHost {
     private events: {[index: string] : any[]};
     on(event: string, fn) {
         if(!this.events) this.events = {};

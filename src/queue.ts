@@ -1,7 +1,7 @@
-import { EventEmitter } from "./core"
+import { EventHost } from "./core"
 import { Asset } from "./asset";
 
-export class Queue extends EventEmitter {
+export class Queue extends EventHost {
     private readMark: number = 64;
     private finished: boolean = false;
     private buffering: boolean = true;

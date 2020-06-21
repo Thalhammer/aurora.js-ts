@@ -1,11 +1,11 @@
-import { EventEmitter, Stream, Bitstream, BufferList, Buffer, UnderflowError } from "./core";
+import { EventHost, Stream, Bitstream, BufferList, Buffer, UnderflowError } from "./core";
 import { Demuxer } from "./demuxer";
 
 export interface DecoderRegistration {
     new (demuxer: Demuxer, format): Decoder;
 }
 
-export abstract class Decoder extends EventEmitter {
+export abstract class Decoder extends EventHost {
     protected stream: Stream;
     protected bitstream: Bitstream;
     private receivedFinalBuffer: boolean;

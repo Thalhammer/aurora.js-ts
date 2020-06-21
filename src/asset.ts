@@ -5,13 +5,13 @@ class to inspect information about an audio file, such as its
 format, metadata, and duration, as well as actually decode the
 file to linear PCM raw audio data.
 */
-import {EventEmitter} from './core/event-emitter';
+import {EventHost} from './core';
 import { HTTPSource, FileSource, BufferSource } from './sources';
 import {Demuxer} from './demuxer';
 import {Decoder} from './decoder';
 import {ISource} from './source';
 
-export class Asset extends EventEmitter {
+export class Asset extends EventHost {
 
     private buffered : number = 0;
     private duration : number = null;

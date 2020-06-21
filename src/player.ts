@@ -6,14 +6,14 @@ and interfacing with AudioDevices to keep track of the
 playback time.
 */
 
-import { EventEmitter } from './core/event-emitter';
+import { EventHost } from './core';
 import { Asset } from './asset';
 import { VolumeFilter, BalanceFilter } from './filters';
 import { Queue } from './queue';
 import { AudioDevice } from './audio-device';
 import { Filter } from './filter';
 
-export class Player extends EventEmitter {
+export class Player extends EventHost {
   public playing: boolean = false;
   private buffered: number = 0;
   private currentTime: number = 0;

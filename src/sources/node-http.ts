@@ -1,7 +1,7 @@
 import * as AV from '../core';
 import * as http from 'http';
 
-export class HTTPSource extends AV.EventEmitter {
+export class HTTPSource extends AV.EventHost {
   private request: http.ClientRequest;
   private response: http.ClientResponse;
   private loaded;

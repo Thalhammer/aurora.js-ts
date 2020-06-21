@@ -1,6 +1,6 @@
 import * as AV from '../core';
 
-export class FileSource extends AV.EventEmitter {
+export class FileSource extends AV.EventHost {
   private offset: number;
   private length: number;
   private chunkSize: number;

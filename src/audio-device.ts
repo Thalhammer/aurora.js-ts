@@ -1,4 +1,4 @@
-import { EventEmitter } from "./core";
+import { EventHost } from "./core";
 import { AudioDeviceBackend } from "./audio-device-backend";
 
 export interface DeviceRegistration {
@@ -6,7 +6,7 @@ export interface DeviceRegistration {
     supported: boolean;
 }
 
-export class AudioDevice extends EventEmitter {
+export class AudioDevice extends EventHost {
     private sampleRate: number;
     private channels: number;
     private playing: boolean;
