@@ -1,0 +1,30 @@
+import { EventHost } from './core';
+import { Asset } from './asset';
+export declare class Player extends EventHost {
+    private asset;
+    playing: boolean;
+    private buffered;
+    private currentTime;
+    private duration;
+    volume: number;
+    pan: number;
+    private metadata;
+    private format;
+    private queue;
+    private startedPreloading;
+    private device;
+    private refill;
+    private filters;
+    constructor(asset: Asset);
+    static fromURL(url: any, opts: any): Player;
+    static fromFile(file: any): Player;
+    static fromBuffer(buffer: any): Player;
+    preload(): void;
+    play(): void;
+    pause(): void;
+    togglePlayback(): void;
+    stop(): void;
+    seek(timestamp: any): number;
+    startPlaying(): void;
+    destroy(): void;
+}
