@@ -17,8 +17,7 @@ describe('sources/http', () => {
         });
 
         source.on("error", (err) => {
-            console.log(err);
-            expect(true).toBeFalsy();
+            fail(err);
         });
 
         source.start();
@@ -42,8 +41,7 @@ describe('sources/http', () => {
 
 
         source.on("error", (err) => {
-            console.log(err);
-            expect(true).toBeFalsy();
+            fail(err);
         });
 
         source.start();

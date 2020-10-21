@@ -26,5 +26,6 @@ export default {
 
     // Resolve source maps to the original source
     sourceMaps()
-  ]
+  ],
+  context: "this"
 }

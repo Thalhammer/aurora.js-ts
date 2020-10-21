@@ -1,7 +1,7 @@
 export class UnderflowError extends Error {
-    constructor() {
-        super();
+    constructor(m?:string) {
+        super(m || "UnderflowError");
+        Object.setPrototypeOf(this, UnderflowError.prototype);
         this.name = "UnderflowError";
-        this.stack = new Error().stack;
     }
 };

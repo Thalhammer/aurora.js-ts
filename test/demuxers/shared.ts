@@ -1,6 +1,7 @@
 import * as AV from '../../src';
 import { CRC32 } from '../crc32';
 import * as testcfg from '../config';
+import * as fs from 'fs';
 
 function multiDone(count, done) {
     return () => {

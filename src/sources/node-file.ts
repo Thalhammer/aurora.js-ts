@@ -33,31 +33,6 @@ export class FileSource extends AV.EventHost {
         this.emit("progress", this.loaded / this.size * 100);
         this.emit("data", new AV.Buffer(new Uint8Array(buf)));
       });
-      
-      // TODO: Buffering somehow breaks our data, pass it straight through for now
-      /*
-      let b = Buffer.alloc(1 << 20);
-      let blen = 0;
-      this.stream.on("data", (buf : Buffer) => {
-        this.loaded += buf.length;
-        buf.copy(b, blen);
-        blen += buf.length;
-  
-        this.emit("progress", this.loaded / this.size * 100);
-  
-        if(blen >= b.length || this.loaded >= this.size) {
-          if(blen < b.length) {
-            b = b.slice(0, blen);
-          }
-  
-          this.emit("data", new AV.Buffer(new Uint8Array(b)));
-          blen -= b.length;
-          buf.copy(b, 0, blen);
-          blen = buf.length - blen;
-        }
-      });
-      */
-  
   
       this.stream.on("end", ()=>{
         this.emit("end");

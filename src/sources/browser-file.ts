@@ -9,6 +9,8 @@ export class FileSource extends AV.EventHost {
 
   constructor(private file: File | Blob) {
     super();
+    if(!(file instanceof File) && !(file instanceof Blob))
+      throw new TypeError("file argument must be a Blob or File");
     if(!FileReader)
       throw new Error("This browser does not have FileReader support");
     this.offset = 0;
