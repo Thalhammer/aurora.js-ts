@@ -1,16 +1,15 @@
-/// <reference types="node" />
 import * as AV from '../core';
-import * as http from 'http';
 export declare class HTTPSource extends AV.EventHost {
-    private url;
+    private file;
     private opts?;
-    private request;
-    private response;
-    private loaded;
-    private size;
-    constructor(url: string, opts?: any);
-    start(): http.IncomingMessage;
+    private chunkSize;
+    private inflight;
+    private length;
+    private xhr;
+    private offset;
+    constructor(file: any, opts?: any);
+    start(): void;
     pause(): void;
+    private loop;
     private reset;
-    private errorHandler;
 }

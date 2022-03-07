@@ -1,6 +1,3 @@
-import * as fs from 'fs';
-import * as http from 'http';
-
 /**
  * Base class used for all classes
  *
@@ -1994,50 +1991,69 @@ var __extends$4 = (this && this.__extends) || (function () {
 })();
 var FileSource = /** @class */ (function (_super) {
     __extends$4(FileSource, _super);
-    function FileSource(filename) {
+    function FileSource(file) {
         var _this = _super.call(this) || this;
-        _this.filename = filename;
-        _this.stream = null;
-        _this.loaded = null;
-        _this.size = null;
+        _this.file = file;
+        if (!(file instanceof File) && !(file instanceof Blob)) {
+            throw new TypeError('file argument must be a Blob or File');
+        }
+        if (!FileReader) {
+            throw new Error('This browser does not have FileReader support');
+        }
+        _this.offset = 0;
+        _this.length = file.size;
+        _this.chunkSize = 1 << 20;
+        if (!_this.file.slice) {
+            _this.file.slice = _this.file['webkitSlice'] || _this.file['mozSlice'];
+        }
         return _this;
     }
     FileSource.prototype.start = function () {
         var _this = this;
-        if (!this.size) {
-            return this.getSize();
+        if (this.reader && !this.active) {
+            return this.loop();
         }
-        if (this.stream) {
-            return this.stream.resume();
-        }
-        this.stream = fs.createReadStream(this.filename);
-        this.stream.on('data', function (buf) {
-            _this.loaded += buf.length;
-            _this.emit('progress', _this.loaded / _this.size * 100);
-            _this.emit('data', new Buffer(new Uint8Array(buf)));
-        });
-        this.stream.on('end', function () {
-            _this.emit('end');
-        });
-        this.stream.on('error', function (err) {
-            _this.pause();
-            _this.emit('error', err);
-        });
+        this.reader = new FileReader();
+        this.active = true;
+        this.reader.onload = function (e) {
+            var buf = new Buffer(new Uint8Array(e.target.result));
+            _this.offset += buf.length;
+            _this.emit('data', buf);
+            _this.active = false;
+            if (_this.offset < _this.length) {
+                _this.loop();
+            }
+        };
+        this.reader.onloadend = function (e) {
+            if (_this.offset === _this.length) {
+                _this.emit('end');
+                _this.reader = null;
+            }
+        };
+        this.reader.onerror = function (e) {
+            _this.emit('error', e);
+        };
+        this.reader.onprogress = function (e) {
+            _this.emit('progress', (_this.offset + e.loaded) / _this.length * 100);
+        };
+        this.loop();
     };
     FileSource.prototype.pause = function () {
-        if (this.stream) {
-            this.stream.pause();
+        this.active = false;
+        try {
+            this.reader.abort();
         }
+        catch (e) { }
     };
-    FileSource.prototype.getSize = function () {
-        var _this = this;
-        fs.stat(this.filename, function (err, stat) {
-            if (err) {
-                return _this.emit('error', err);
-            }
-            _this.size = stat.size;
-            _this.start();
-        });
+    FileSource.prototype.reset = function () {
+        this.pause();
+        this.offset = null;
+    };
+    FileSource.prototype.loop = function () {
+        this.active = true;
+        var endPos = Math.min(this.offset + this.chunkSize, this.length);
+        var blob = this.file.slice(this.offset, endPos);
+        this.reader.readAsArrayBuffer(blob);
     };
     return FileSource;
 }(EventHost));
@@ -2059,55 +2075,100 @@ var __extends$3 = (this && this.__extends) || (function () {
 })();
 var HTTPSource = /** @class */ (function (_super) {
     __extends$3(HTTPSource, _super);
-    function HTTPSource(url, opts) {
+    function HTTPSource(file, opts) {
         var _this = _super.call(this) || this;
-        _this.url = url;
+        _this.file = file;
         _this.opts = opts;
-        _this.request = null;
-        _this.response = null;
-        _this.loaded = 0;
-        _this.size = 0;
+        if (!_this.opts) {
+            _this.opts = {};
+        }
+        _this.chunkSize = 1 << 20;
+        _this.inflight = false;
+        if (_this.opts.length) {
+            _this.length = _this.opts.length;
+        }
+        _this.reset();
         return _this;
     }
     HTTPSource.prototype.start = function () {
         var _this = this;
-        if (this.response) {
-            return this.response.resume();
+        if (this.length && !this.inflight) {
+            return this.loop();
         }
-        this.request = http.get(this.url);
-        this.request.on('response', function (resp) {
-            _this.response = resp;
-            if (_this.response.statusCode !== 200) {
-                return _this.errorHandler('Error loading file. HTTP status code ' + _this.response.statusCode);
-            }
-            _this.size = parseInt(_this.response.headers['content-length'], 10);
-            _this.loaded = 0;
-            _this.response.on('data', function (chunk) {
-                _this.loaded += chunk.length;
-                _this.emit('progress', _this.loaded / _this.size * 100);
-                _this.emit('data', new Buffer(new Uint8Array(chunk)));
-            });
-            _this.response.on('end', function () {
-                _this.emit('end');
-            });
-            _this.response.on('error', _this.errorHandler.bind(_this));
-        });
-        this.request.on('error', this.errorHandler.bind(this));
+        this.inflight = true;
+        this.xhr = new XMLHttpRequest();
+        this.xhr.onload = function (event) {
+            _this.length = parseInt(_this.xhr.getResponseHeader('Content-Length'), 10);
+            _this.inflight = false;
+            _this.loop();
+        };
+        this.xhr.onerror = function (err) {
+            _this.pause();
+            _this.emit('error', err);
+        };
+        this.xhr.onabort = function () {
+            _this.inflight = false;
+        };
+        this.xhr.open('HEAD', this.file, true);
+        this.xhr.send(null);
     };
     HTTPSource.prototype.pause = function () {
-        if (this.response) {
-            this.response.pause();
+        this.inflight = false;
+        if (this.xhr) {
+            this.xhr.abort();
         }
+    };
+    HTTPSource.prototype.loop = function () {
+        var _this = this;
+        if (this.inflight || !this.length) {
+            return this.emit('error', 'Something is wrong in HTTPSource.loop');
+        }
+        this.inflight = true;
+        this.xhr = new XMLHttpRequest();
+        this.xhr.onload = function (event) {
+            var buf;
+            if (_this.xhr.response) {
+                buf = new Uint8Array(_this.xhr.response);
+            }
+            else {
+                var txt = _this.xhr.responseText;
+                buf = new Uint8Array(txt.length);
+                for (var i = 0; i < txt.length; i++) {
+                    buf[i] = txt.charCodeAt(i) & 0xff;
+                }
+            }
+            var buffer = new Buffer(buf);
+            _this.offset += buffer.length;
+            _this.emit('data', buffer);
+            if (_this.offset >= _this.length) {
+                _this.emit('end');
+            }
+            _this.inflight = false;
+            if (_this.offset < _this.length) {
+                _this.loop();
+            }
+        };
+        this.xhr.onprogress = function (event) {
+            _this.emit('progress', (_this.offset + event.loaded) / _this.length * 100);
+        };
+        this.xhr.onerror = function (err) {
+            _this.emit('error', err);
+            _this.pause();
+        };
+        this.xhr.onabort = function () {
+            _this.inflight = false;
+        };
+        this.xhr.open('GET', this.file, true);
+        this.xhr.responseType = 'arraybuffer';
+        var endPos = Math.min(this.offset + this.chunkSize, this.length - 1);
+        this.xhr.setRequestHeader('If-None-Match', 'webkit-no-cache');
+        this.xhr.setRequestHeader('Range', 'bytes=' + this.offset + '-' + endPos);
+        this.xhr.overrideMimeType('text/plain; charset=x-user-defined');
+        this.xhr.send(null);
     };
     HTTPSource.prototype.reset = function () {
         this.pause();
-        this.request.abort();
-        this.request = null;
-        this.response = null;
-    };
-    HTTPSource.prototype.errorHandler = function (error) {
-        this.reset();
-        this.emit('error', error);
+        this.offset = 0;
     };
     return HTTPSource;
 }(EventHost));

@@ -1,1 +1,1 @@
-./node-file.ts
+./browser-file.ts

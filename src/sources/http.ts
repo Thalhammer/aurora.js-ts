@@ -1,1 +1,1 @@
-./node-http.ts
+./browser-http.ts

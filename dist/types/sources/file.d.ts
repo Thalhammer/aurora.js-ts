@@ -1,13 +1,14 @@
-/// <reference types="node" />
-import * as fs from 'fs';
 import * as AV from '../core';
 export declare class FileSource extends AV.EventHost {
-    private filename;
-    private stream;
-    private loaded;
-    private size;
-    constructor(filename: string);
-    start(): void | fs.ReadStream;
+    private file;
+    private offset;
+    private length;
+    private chunkSize;
+    private reader;
+    private active;
+    constructor(file: File | Blob);
+    start(): void;
     pause(): void;
-    private getSize;
+    reset(): void;
+    private loop;
 }
