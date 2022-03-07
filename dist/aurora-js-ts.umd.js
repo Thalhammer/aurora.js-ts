@@ -39,20 +39,20 @@
 
     var Buffer = /** @class */ (function () {
         function Buffer(input) {
-            if (input instanceof Uint8Array) {
+            if (input instanceof Uint8Array || input.constructor.name === 'Uint8Array') {
                 this.data = input;
             }
-            else if (input instanceof ArrayBuffer || Array.isArray(input)
+            else if (input instanceof ArrayBuffer || Array.isArray(input) || input.constructor.name === 'ArrayBuffer'
                 || (typeof global !== 'undefined' && global.Buffer && global.Buffer.isBuffer(input))) {
                 this.data = new Uint8Array(input);
             }
             else if (typeof input === 'number') { // This is split from above to make typescript happy
                 this.data = new Uint8Array(input);
             }
-            else if (input.buffer instanceof ArrayBuffer) {
-                this.data = new Uint8Array(input.buffer, input.byteOffset, input.length * input.BYTES_PER_ELEMENT);
+            else if (input.buffer && (input.buffer instanceof ArrayBuffer || input.buffer.constructor.name === 'ArrayBuffer')) {
+                this.data = new Uint8Array(input.buffer, input.byteOffset, input.byteLength);
             }
-            else if (input instanceof Buffer) {
+            else if (input instanceof Buffer || input.constructor.name === 'Buffer') {
                 this.data = input.data;
             }
             else {
