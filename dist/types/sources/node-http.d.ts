@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import * as AV from '../core';
 import * as http from 'http';
 export declare class HTTPSource extends AV.EventHost {
@@ -8,7 +9,7 @@ export declare class HTTPSource extends AV.EventHost {
     private loaded;
     private size;
     constructor(url: string, opts?: any);
-    start(): http.ClientResponse;
+    start(): http.IncomingMessage;
     pause(): void;
     private reset;
     private errorHandler;

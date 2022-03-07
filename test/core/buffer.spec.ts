@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import * as AV from '../../src/core/';
 
 describe('core/buffer', () => {

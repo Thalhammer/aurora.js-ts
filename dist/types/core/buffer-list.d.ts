@@ -1,4 +1,4 @@
-import { Buffer } from "./buffer";
+import { Buffer } from './buffer';
 export declare class BufferList {
     first: Buffer;
     last: Buffer;

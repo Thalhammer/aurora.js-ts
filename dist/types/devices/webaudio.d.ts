@@ -1,6 +1,6 @@
-import { AudioDeviceBackend } from "../audio-device-backend";
+import { AudioDeviceBackend } from '../audio-device-backend';
 export declare class WebAudioDevice extends AudioDeviceBackend {
-    static Context: any;
+    static contextClass: any;
     static supported: any;
     static sharedContext: any;
     private context;

@@ -1,7 +1,5 @@
 import { Demuxer } from '../demuxer';
 export declare class AUDemuxer extends Demuxer {
-    init(): void;
-    static probe(buffer: any): boolean;
     static readonly bps: {
         0: number;
         1: number;
@@ -17,5 +15,7 @@ export declare class AUDemuxer extends Demuxer {
         27: string;
     };
     private readHeader;
+    static probe(buffer: any): boolean;
+    init(): void;
     readChunk(): void;
 }

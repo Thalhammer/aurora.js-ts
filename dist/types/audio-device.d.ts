@@ -1,10 +1,11 @@
-import { EventHost } from "./core";
-import { AudioDeviceBackend } from "./audio-device-backend";
+import { EventHost } from './core';
+import { AudioDeviceBackend } from './audio-device-backend';
 export interface DeviceRegistration {
-    new (...args: any[]): AudioDeviceBackend;
     supported: boolean;
+    new (...args: any[]): AudioDeviceBackend;
 }
 export declare class AudioDevice extends EventHost {
+    private static devices;
     private sampleRate;
     private channels;
     private playing;
@@ -14,12 +15,11 @@ export declare class AudioDevice extends EventHost {
     private refill;
     private device;
     constructor(sampleRate: number, channels: number);
+    static register(device: DeviceRegistration): void;
+    static create(sampleRate: number, channels: number): AudioDeviceBackend;
     start(): void;
     stop(): void;
     destroy(): void;
     seek(cTime: any): void;
     updateTime(): void;
-    private static devices;
-    static register(device: DeviceRegistration): void;
-    static create(sampleRate: number, channels: number): AudioDeviceBackend;
 }

@@ -5,10 +5,10 @@ export declare class BufferSource extends EventHost implements ISource {
     private paused;
     private _timer;
     constructor(input: BufferList | Buffer | ArrayBuffer);
-    private setImmediate;
-    private clearImmediate;
     start(): void;
     loop(): void;
     pause(): void;
     reset(): void;
+    private setImmediate;
+    private clearImmediate;
 }

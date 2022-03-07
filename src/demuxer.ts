@@ -1,103 +1,110 @@
-import * as AV from "./core"
-import { SeekPoint } from "./seek-point";
+import * as AV from './core';
+import { SeekPoint } from './seek-point';
 
 export interface DemuxerRegistration {
-    new (...args: any[]): Demuxer;
-    probe(buffer: AV.Stream): boolean;
+	new(...args: any[]): Demuxer;
+	probe(buffer: AV.Stream): boolean;
 }
 
 export abstract class Demuxer extends AV.EventHost {
-    private source: AV.EventHost;
-    public stream: AV.Stream;
-    public seekPoints: SeekPoint[];
-    public format: any;
+	private static demuxers: DemuxerRegistration[] = [];
 
-    constructor(source: AV.EventHost, chunk: AV.Buffer) {
-        super();
-        let list = new AV.BufferList();
-        list.append(chunk);
-        this.stream = new AV.Stream(list);
-        this.source = source;
+	public stream: AV.Stream;
+	public seekPoints: SeekPoint[];
+	public format: any;
+	private source: AV.EventHost;
 
-        let received = false;
-        this.source.on("data", (chunk) => {
-            received = true;
-            list.append(chunk);
-            try {
-                this.readChunk();
-            } catch(e) {
-                this.emit("error", e);
-            }
-        });
-        this.source.on("error", (err) => {
-            this.emit("error", err);
-        });
-        this.source.on("end", () => {
-            if(!received) this.readChunk();
-            this.emit("end");
-        });
-        this.seekPoints = [];
-        this.init();
-    }
+	constructor(source: AV.EventHost, chunk: AV.Buffer) {
+		super();
+		const list = new AV.BufferList();
+		list.append(chunk);
+		this.stream = new AV.Stream(list);
+		this.source = source;
 
-    abstract init();
-    abstract readChunk();
+		let received = false;
+		this.source.on('data', (c) => {
+			received = true;
+			list.append(c);
+			try {
+				this.readChunk();
+			} catch (e) {
+				this.emit('error', e);
+			}
+		});
+		this.source.on('error', (err) => {
+			this.emit('error', err);
+		});
+		this.source.on('end', () => {
+			if (!received) {
+				this.readChunk();
+			}
+			this.emit('end');
+		});
+		this.seekPoints = [];
+		this.init();
+	}
 
-    addSeekPoint(offset, timestamp) {
-        let index = this.searchTimestamp(timestamp);
-        this.seekPoints.splice(index, 0, new SeekPoint(offset, timestamp));
-    }
+	static register(demuxer: DemuxerRegistration) {
+		this.demuxers.push(demuxer);
+	}
 
-    searchTimestamp(timestamp: number, backward? :boolean) {
-        let low = 0;
-        let high = this.seekPoints.length;
+	static find(buffer: AV.Buffer) {
+		const stream = AV.Stream.fromBuffer(buffer);
+		for (const format of this.demuxers) {
+			const offset = stream.offset;
+			try {
+				if (format.probe(stream)) {
+					return format;
+				}
+			} catch (e) {
+				console.error(e);
+			}
 
-        if(high > 0 && this.seekPoints[high - 1].timestamp < timestamp)
-            return high;
-        
-        while(low < high) {
-            let mid = (low + high) >> 1;
-            let time = this.seekPoints[mid].timestamp;
+			stream.seek(offset);
+		}
+		return null;
+	}
 
-            if(time < timestamp)
-                low = mid + 1;
-            else if(time >= timestamp)
-                high = mid;
-        }
+	addSeekPoint(offset, timestamp) {
+		const index = this.searchTimestamp(timestamp);
+		this.seekPoints.splice(index, 0, new SeekPoint(offset, timestamp));
+	}
 
-        if(high > this.seekPoints.length)
-            high = this.seekPoints.length;
-        
-        return high;
-    }
+	searchTimestamp(timestamp: number, backward?: boolean) {
+		let low = 0;
+		let high = this.seekPoints.length;
 
-    seek(timestamp) : SeekPoint {
-        if(this.format && this.format.framesPerPacket > 0 && this.format.bytesPerPacket > 0) {
-            return new SeekPoint(this.format.bytesPerPacket * timestamp / this.format.framesPerPacket, timestamp);
-        } else {
-            let idx = this.searchTimestamp(timestamp);
-            return this.seekPoints[idx];
-        }
-    }
+		if (high > 0 && this.seekPoints[high - 1].timestamp < timestamp) {
+			return high;
+		}
 
-    private static demuxers : DemuxerRegistration[] = [];
+		while (low < high) {
+			const mid = (low + high) >> 1;
+			const time = this.seekPoints[mid].timestamp;
 
-    static register(demuxer: DemuxerRegistration) {
-        this.demuxers.push(demuxer);
-    }
+			if (time < timestamp) {
+				low = mid + 1;
+			} else if (time >= timestamp) {
+				high = mid;
+			}
+		}
 
-    static find(buffer: AV.Buffer) {
-        let stream = AV.Stream.fromBuffer(buffer);
-        for (const format of this.demuxers) {
-            let offset = stream.offset;
-            try {
-                if(format.probe(stream)) return format;
-            } catch(e){
-                console.error(e);
-            }
+		if (high > this.seekPoints.length) {
+			high = this.seekPoints.length;
+		}
 
-            stream.seek(offset);
-        }
-        return null;
-    }
+		return high;
+	}
+
+	seek(timestamp): SeekPoint {
+		if (this.format && this.format.framesPerPacket > 0 && this.format.bytesPerPacket > 0) {
+			return new SeekPoint(this.format.bytesPerPacket * timestamp / this.format.framesPerPacket, timestamp);
+		} else {
+			const idx = this.searchTimestamp(timestamp);
+			return this.seekPoints[idx];
+		}
+	}
+
+	abstract init();
+	abstract readChunk();
 }

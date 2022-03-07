@@ -1,7 +1,6 @@
-import { Demuxer } from "../demuxer";
+import { Demuxer } from '../demuxer';
 import { Stream } from '../core';
 export declare class WAVEDemuxer extends Demuxer {
-    static probe(stream: Stream): boolean;
     static formats: {
         [idx: number]: string;
     };
@@ -11,6 +10,7 @@ export declare class WAVEDemuxer extends Demuxer {
     private type;
     private len;
     private sentDuration;
+    static probe(stream: Stream): boolean;
     init(): void;
     readChunk(): void;
 }

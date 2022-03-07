@@ -3,6 +3,7 @@ import { Decoder } from './decoder';
 import { ISource } from './source';
 export declare class Asset extends EventHost {
     private source;
+    decoder: Decoder;
     private buffered;
     private duration;
     private format;
@@ -10,7 +11,6 @@ export declare class Asset extends EventHost {
     private active;
     private shouldDecode;
     private demuxer;
-    decoder: Decoder;
     constructor(source: ISource);
     static fromURL(url: any, opts: any): Asset;
     static fromFile(file: any): Asset;
@@ -22,6 +22,6 @@ export declare class Asset extends EventHost {
     decodeToBuffer(callback: any): void;
     probe(chunk: any): void;
     findDecoder(format: any): void;
-    private _decode;
     destroy(): void;
+    private _decode;
 }

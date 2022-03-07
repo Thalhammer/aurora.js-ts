@@ -1,6 +1,8 @@
-import { BufferList } from "./buffer-list";
-import { Buffer } from "./buffer";
+import { BufferList } from './buffer-list';
+import { Buffer } from './buffer';
 export declare class Stream {
+    localOffset: number;
+    offset: number;
     private buf;
     private uint8;
     private int8;
@@ -12,8 +14,6 @@ export declare class Stream {
     private float64;
     private nativeEndian;
     private list;
-    localOffset: number;
-    offset: number;
     constructor(list: BufferList);
     static fromBuffer(buffer: any): Stream;
     copy(): Stream;
@@ -44,15 +44,15 @@ export declare class Stream {
     peekFloat32(offset?: number, litteEndian?: boolean): number;
     readFloat64(litteEndian?: boolean): number;
     peekFloat64(offset?: number, litteEndian?: boolean): number;
-    private float64Fallback;
     readFloat80(littleEndian?: boolean): number;
     peekFloat80(offset?: number, litteEndian?: boolean): number;
-    private float80;
     readBuffer(length: number): Buffer;
     peekBuffer(offset: number, length: number): Buffer;
     readSingleBuffer(length: number): Buffer;
     peekSingleBuffer(offset: number, length: number): Buffer;
     readString(length: number, encoding?: string): string;
     peekString(offset: number, length: number, encoding?: string): string;
+    private float64Fallback;
     private decodeString;
+    private float80;
 }

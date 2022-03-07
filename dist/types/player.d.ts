@@ -3,11 +3,11 @@ import { Asset } from './asset';
 export declare class Player extends EventHost {
     private asset;
     playing: boolean;
+    volume: number;
+    pan: number;
     private buffered;
     private currentTime;
     private duration;
-    volume: number;
-    pan: number;
     private metadata;
     private format;
     private queue;

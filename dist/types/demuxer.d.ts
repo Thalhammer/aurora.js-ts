@@ -1,21 +1,21 @@
-import * as AV from "./core";
-import { SeekPoint } from "./seek-point";
+import * as AV from './core';
+import { SeekPoint } from './seek-point';
 export interface DemuxerRegistration {
     new (...args: any[]): Demuxer;
     probe(buffer: AV.Stream): boolean;
 }
 export declare abstract class Demuxer extends AV.EventHost {
-    private source;
+    private static demuxers;
     stream: AV.Stream;
     seekPoints: SeekPoint[];
     format: any;
+    private source;
     constructor(source: AV.EventHost, chunk: AV.Buffer);
-    abstract init(): any;
-    abstract readChunk(): any;
+    static register(demuxer: DemuxerRegistration): void;
+    static find(buffer: AV.Buffer): DemuxerRegistration;
     addSeekPoint(offset: any, timestamp: any): void;
     searchTimestamp(timestamp: number, backward?: boolean): number;
     seek(timestamp: any): SeekPoint;
-    private static demuxers;
-    static register(demuxer: DemuxerRegistration): void;
-    static find(buffer: AV.Buffer): DemuxerRegistration;
+    abstract init(): any;
+    abstract readChunk(): any;
 }

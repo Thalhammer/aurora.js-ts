@@ -9,7 +9,7 @@ export declare class HTTPSource extends AV.EventHost {
     private offset;
     constructor(file: any, opts?: any);
     start(): void;
-    private loop;
     pause(): void;
+    private loop;
     private reset;
 }

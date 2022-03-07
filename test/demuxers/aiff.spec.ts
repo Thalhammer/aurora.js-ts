@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import { demuxerTest } from './shared';
 
 describe('demuxers/aiff', () => {

@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import { decoderTest, decoderTestSkip } from './shared';
 
 // TODO: Some tests are skipped until the correct demuxers are ported

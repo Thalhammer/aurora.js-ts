@@ -1,12 +1,12 @@
 import { Decoder } from '../decoder';
 export declare class XLAWDecoder extends Decoder {
-    setCookie(cookie: any): void;
-    static readonly SIGN_BIT: number;
-    static readonly QUANT_MASK: number;
-    static readonly SEG_SHIFT: number;
-    static readonly SEG_MASK: number;
-    static readonly BIAS: number;
+    static readonly signBit = 128;
+    static readonly quantMask = 15;
+    static readonly segShift = 4;
+    static readonly segMask = 112;
+    static readonly bias = 132;
     private table;
+    setCookie(cookie: any): void;
     init(): void;
     readChunk(): Int16Array;
 }

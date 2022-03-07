@@ -1,2 +1,2 @@
 export * from './balance';
-export * from './volume'
+export * from './volume';

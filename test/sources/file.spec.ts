@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import * as AV from '../../src/';
 import { CRC32 } from '../crc32';
 import { config } from '../config';
@@ -5,7 +8,7 @@ import * as fs from 'fs';
 
 describe('sources/file', () => {
     let getSource = (fn) => {
-        // if we're in Node, we can read any file we like, otherwise simulate by reading 
+        // if we're in Node, we can read any file we like, otherwise simulate by reading
         // a blob from an XHR and loading it using a FileSource
         if (global.Buffer)
             fn(new AV.FileSource(__dirname + "/../data/m4a/base.m4a"));

@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import * as AV from '../../src/';
 import { CRC32 } from '../crc32';
 import { config } from '../config';

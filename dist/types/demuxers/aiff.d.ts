@@ -1,7 +1,5 @@
 import { Demuxer } from '../demuxer';
 export declare class AIFFDemuxer extends Demuxer {
-    init(): void;
-    static probe(buffer: any): boolean;
     private readStart;
     private fileSize;
     private fileType;
@@ -9,5 +7,7 @@ export declare class AIFFDemuxer extends Demuxer {
     private readSSNDHeader;
     private type;
     private len;
+    static probe(buffer: any): boolean;
+    init(): void;
     readChunk(): void;
 }

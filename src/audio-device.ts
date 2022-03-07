@@ -1,84 +1,100 @@
-import { EventHost } from "./core";
-import { AudioDeviceBackend } from "./audio-device-backend";
+import { EventHost } from './core';
+import { AudioDeviceBackend } from './audio-device-backend';
 
 export interface DeviceRegistration {
-    new (...args: any[]): AudioDeviceBackend;
-    supported: boolean;
+	supported: boolean;
+	new(...args: any[]): AudioDeviceBackend;
 }
 
 export class AudioDevice extends EventHost {
-    private sampleRate: number;
-    private channels: number;
-    private playing: boolean;
-    private currentTime: number;
-    private _lastTime: number;
+	private static devices: DeviceRegistration[] = [];
 
-    private _timer: any;
-    private refill: any;
-    private device: AudioDeviceBackend;
+	private sampleRate: number;
+	private channels: number;
+	private playing: boolean;
+	private currentTime: number;
+	private _lastTime: number;
 
-    constructor(sampleRate: number, channels: number) {
-        super();
-        this.sampleRate = sampleRate;
-        this.channels = channels;
-        this.playing = false;
-        this.currentTime = 0;
-        this._lastTime = 0;
-    }
+	private _timer: any;
+	private refill: any;
+	private device: AudioDeviceBackend;
 
-    start() {
-        if(this.playing) return;
-        this.playing = true;
+	constructor(sampleRate: number, channels: number) {
+		super();
+		this.sampleRate = sampleRate;
+		this.channels = channels;
+		this.playing = false;
+		this.currentTime = 0;
+		this._lastTime = 0;
+	}
 
-        if(!this.device) this.device = AudioDevice.create(this.sampleRate, this.channels);
-        if(!this.device) throw new Error("No supported audio device found.");
+	static register(device: DeviceRegistration) {
+		this.devices.push(device);
+	}
 
-        this._lastTime = this.device.getDeviceTime();
-        this._timer = setInterval(this.updateTime.bind(this), 200);
+	static create(sampleRate: number, channels: number) {
+		for (const device of this.devices) {
+			if (device.supported) {
+				return new device(sampleRate, channels);
+			}
+		}
+		return null;
+	}
 
-        this.refill = (buffer: Buffer) => {
-            this.emit("refill", buffer);
-        };
+	start() {
+		if (this.playing) {
+			return;
+		}
+		this.playing = true;
 
-        this.device.on("refill", this.refill);
-    }
+		if (!this.device) {
+			this.device = AudioDevice.create(this.sampleRate, this.channels);
+		}
+		if (!this.device) {
+			throw new Error('No supported audio device found.');
+		}
 
-    stop() {
-        if(!this.playing) return;
-        this.playing = false;
+		this._lastTime = this.device.getDeviceTime();
+		this._timer = setInterval(this.updateTime.bind(this), 200);
 
-        if(this.device) this.device.off("refill", this.refill);
-        clearInterval(this._timer);
-    }
+		this.refill = (buffer: Buffer) => {
+			this.emit('refill', buffer);
+		};
 
-    destroy() {
-        this.stop();
-        if(this.device) this.device.destroy();
-    }
+		this.device.on('refill', this.refill);
+	}
 
-    seek(cTime) {
-        this.currentTime = cTime;
-        if(this.playing) this._lastTime = this.device.getDeviceTime();
-        this.emit("timeUpdate", this.currentTime);
-    }
+	stop() {
+		if (!this.playing) {
+			return;
+		}
+		this.playing = false;
 
-    updateTime() {
-        let time = this.device.getDeviceTime();
-        this.currentTime += (time-this._lastTime) / this.device.sampleRate * 1000 | 0;
-        this._lastTime = time;
-        this.emit("timeUpdate", this.currentTime);
-    }
+		if (this.device) {
+			this.device.off('refill', this.refill);
+		}
+		clearInterval(this._timer);
+	}
 
-    private static devices : DeviceRegistration[] = [];
+	destroy() {
+		this.stop();
+		if (this.device) {
+			this.device.destroy();
+		}
+	}
 
-    static register(device: DeviceRegistration) {
-        this.devices.push(device);
-    }
+	seek(cTime) {
+		this.currentTime = cTime;
+		if (this.playing) {
+			this._lastTime = this.device.getDeviceTime();
+		}
+		this.emit('timeUpdate', this.currentTime);
+	}
 
-    static create(sampleRate: number, channels: number) {
-        for(let device of this.devices) {
-            if(device.supported) return new device(sampleRate, channels);
-        }
-        return null;
-    }
+	updateTime() {
+		const time = this.device.getDeviceTime();
+		this.currentTime += (time - this._lastTime) / this.device.sampleRate * 1000 | 0;
+		this._lastTime = time;
+		this.emit('timeUpdate', this.currentTime);
+	}
 }

@@ -14,4 +14,4 @@ export * from './queue';
 export * from './seek-point';
 export * from './asset';
 export * from './player';
-export * from './source'
+export * from './source';

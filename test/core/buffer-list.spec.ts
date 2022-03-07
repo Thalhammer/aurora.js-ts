@@ -1,3 +1,6 @@
+/**
+ * @jest-environment jsdom
+ */
 import * as AV from '../../src/';
 
 describe('core/buffer-list', () => {
@@ -85,7 +88,7 @@ describe('core/buffer-list', () => {
     expect(list.availableBuffers).toBe(2);
     expect(list.availableBytes).toBe(6);
     expect(list.first).toEqual(buffer);
-    
+
     // advancing past the end of the list and then rewinding should give us the last buffer
     expect(list.advance()).toBeTruthy();
     expect(list.advance()).toBeFalsy();

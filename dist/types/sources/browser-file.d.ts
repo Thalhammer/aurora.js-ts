@@ -8,7 +8,7 @@ export declare class FileSource extends AV.EventHost {
     private active;
     constructor(file: File | Blob);
     start(): void;
-    private loop;
     pause(): void;
     reset(): void;
+    private loop;
 }
